@@ -5,9 +5,12 @@
 package it.polito.tdp.imdb;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.imdb.model.Director;
 import it.polito.tdp.imdb.model.Model;
+import it.polito.tdp.imdb.model.RegistraAdiacente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,10 +38,10 @@ public class FXMLController {
     private Button btnCercaAffini; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxAnno"
-    private ComboBox<?> boxAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxRegista"
-    private ComboBox<?> boxRegista; // Value injected by FXMLLoader
+    private ComboBox<Director> boxRegista; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtAttoriCondivisi"
     private TextField txtAttoriCondivisi; // Value injected by FXMLLoader
@@ -48,12 +51,32 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	Integer anno = this.boxAnno.getValue();
+    	if (anno==null) {
+    		this.txtResult.setText("Errore");
+    		return;
+    	}
+    	model.creaGrafo(anno);
+    	this.txtResult.setText("GRAFO CREATO");
+    	this.txtResult.appendText("\n# vertici: "+model.getNumVertici());
+    	this.txtResult.appendText("\n# archi: "+model.getNumArchi());
+    	this.boxRegista.getItems().clear();
+    	this.boxRegista.getItems().addAll(model.getVertici());
     }
 
     @FXML
     void doRegistiAdiacenti(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	Director director = this.boxRegista.getValue();
+    	if (director==null) {
+    		this.txtResult.setText("Errore");
+    		return;
+    	}
+    	List<RegistraAdiacente> list=model.getAdiacenti(director);
+    	for (RegistraAdiacente r : list) {
+    		this.txtResult.appendText(r.getDirector()+" - "+r.getPeso()+"\n");
+    	}
     }
 
     @FXML
@@ -74,8 +97,9 @@ public class FXMLController {
     }
     
    public void setModel(Model model) {
-    	
     	this.model = model;
+    	for (int i=2004; i<=2006; i++)
+    		this.boxAnno.getItems().add(i);
     	
     }
     
