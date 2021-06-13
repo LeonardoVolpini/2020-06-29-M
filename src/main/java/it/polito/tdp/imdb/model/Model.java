@@ -73,12 +73,11 @@ public class Model {
 		return ris;
 	}
 	
-	public List<Director> percorsoMax(int c, Director partenza){ //spesso è dei vertici
+	public List<Director> percorsoMax(int c, Director partenza){ 
 		this.best=null;
-		this.max=0; //un possibile intero che ci dice se la nostra best è davvero la soluzione migliore (ad esempio pesoMax)
+		this.max=0;
 		this.raggiungibili= ci.connectedSetOf(partenza); //per sapere quanli director posso raggiungere dalla mia partenza
 		List<Director> parziale= new ArrayList<>();
-		int livello=0; //opzionale, spesso parte da 0
 		parziale.add(partenza);
 		ricorsione(parziale , c);
 		return this.best;
@@ -88,7 +87,7 @@ public class Model {
 		Director ultimo = parziale.get(parziale.size()-1);
 		int massimo= this.calcolaMax(parziale);
 		
-		if (massimo==c || this.raggiungibili.isEmpty()){ //casi terminali, tipo che sono arrivato al vertice Arrivo (passato come parametro), o parziale.size()==TOT ...
+		if (massimo==c || this.raggiungibili.isEmpty()){ 
 			if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
 				this.max=massimo;
 				this.best= new ArrayList<>(parziale);
@@ -103,13 +102,13 @@ public class Model {
 			if (!parziale.contains(prossimo)){ //per evitare i cicli 
 				parziale.add(prossimo);
 				if (this.calcolaMax(parziale)>c) {
-					//se supero il max persemmo allora non testo la ricorsione con questo director
+					//se supero il max permesso allora non testo la ricorsione con questo director
 					parziale.remove(parziale.size()-1);
 					this.raggiungibili.remove(prossimo);
 					continue;
 				}
 				else {
-					ricorsione(parziale,c); //se ho livello devo fare livello +1
+					ricorsione(parziale,c);
 					parziale.remove(parziale.size()-1); //backtracking
 					this.raggiungibili.remove(prossimo);
 				}
