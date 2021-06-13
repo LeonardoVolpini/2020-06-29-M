@@ -3,11 +3,13 @@ package it.polito.tdp.imdb.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -20,10 +22,17 @@ public class Model {
 	private Map<Integer,Director> idMap;
 	private boolean grafoCreato;
 	
+	private ArrayList<Director> best;
+	private int max;
+	private ConnectivityInspector<Director, DefaultWeightedEdge> ci;
+	private Set<Director> raggiungibili;
+	
 	public Model() {
 		this.dao= new ImdbDAO();
 		this.idMap= new HashMap<>();
 		this.grafoCreato=false;
+		this.best= new ArrayList<>();
+		this.raggiungibili= new HashSet<>();
 	}
 	
 	public void creaGrafo(int anno) {
@@ -36,6 +45,7 @@ public class Model {
 			}
 		}
 		this.grafoCreato=true;
+		this.ci= new ConnectivityInspector<>(grafo);
 	}
 
 	public boolean isGrafoCreato() {
@@ -62,4 +72,68 @@ public class Model {
 		Collections.sort(ris);
 		return ris;
 	}
+	
+	public List<Director> percorsoMax(int c, Director partenza){ //spesso è dei vertici
+		this.best=null;
+		this.max=0; //un possibile intero che ci dice se la nostra best è davvero la soluzione migliore (ad esempio pesoMax)
+		this.raggiungibili= ci.connectedSetOf(partenza); //per sapere quanli director posso raggiungere dalla mia partenza
+		List<Director> parziale= new ArrayList<>();
+		int livello=0; //opzionale, spesso parte da 0
+		parziale.add(partenza);
+		ricorsione(parziale , c);
+		return this.best;
+	}
+	
+	private void ricorsione(List<Director> parziale, int c){
+		Director ultimo = parziale.get(parziale.size()-1);
+		int massimo= this.calcolaMax(parziale);
+		
+		if (massimo==c || this.raggiungibili.isEmpty()){ //casi terminali, tipo che sono arrivato al vertice Arrivo (passato come parametro), o parziale.size()==TOT ...
+			if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
+				this.max=massimo;
+				this.best= new ArrayList<>(parziale);
+				return;
+			}
+			else //ho trovato una soluzione ma non è la migliore
+				return;
+		}
+		//da qui faccio la ricorsione:
+		for(DefaultWeightedEdge e : grafo.edgesOf(ultimo)){
+			Director prossimo= Graphs.getOppositeVertex(grafo, e, ultimo); 
+			if (!parziale.contains(prossimo)){ //per evitare i cicli 
+				parziale.add(prossimo);
+				if (this.calcolaMax(parziale)>c) {
+					//se supero il max persemmo allora non testo la ricorsione con questo director
+					parziale.remove(parziale.size()-1);
+					this.raggiungibili.remove(prossimo);
+					continue;
+				}
+				else {
+					ricorsione(parziale,c); //se ho livello devo fare livello +1
+					parziale.remove(parziale.size()-1); //backtracking
+					this.raggiungibili.remove(prossimo);
+				}
+			}
+		}
+	}
+
+	private int calcolaMax(List<Director> parziale) {
+		int peso=0;
+		int i=0; //indice che mi serve per prendere il director successivo in parziale
+		for (Director d : parziale) {
+			if (i==(parziale.size()-1)) 
+				break;
+			DefaultWeightedEdge e = grafo.getEdge(d, parziale.get(i+1));
+			i++;
+			peso += grafo.getEdgeWeight(e);
+		}
+		return peso;
+	}
+	
+	public int pesoMax() {
+		return this.max;
+	}
+	
+	
+	
 }

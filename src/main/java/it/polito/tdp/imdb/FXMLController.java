@@ -68,6 +68,10 @@ public class FXMLController {
     @FXML
     void doRegistiAdiacenti(ActionEvent event) {
     	this.txtResult.clear();
+    	if (!model.isGrafoCreato()) {
+    		this.txtResult.setText("Errore, creare prima il grafo");
+    		return;
+    	}
     	Director director = this.boxRegista.getValue();
     	if (director==null) {
     		this.txtResult.setText("Errore");
@@ -81,7 +85,29 @@ public class FXMLController {
 
     @FXML
     void doRicorsione(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	if (!model.isGrafoCreato()) {
+    		this.txtResult.setText("Errore, creare prima il grafo");
+    		return;
+    	}
+    	String cString = this.txtAttoriCondivisi.getText();
+    	int c;
+    	try {
+    		c= Integer.parseInt(cString);
+    	} catch(NumberFormatException e) {
+    		this.txtResult.setText("inserisci un valore numerico per il numero max di attori condivisi");
+    		return;
+    	}
+    	Director partenza = this.boxRegista.getValue();
+    	if (partenza==null) {
+    		this.txtResult.setText("Errore");
+    		return;
+    	}
+    	List<Director> best= model.percorsoMax(c, partenza);
+    	for (Director d : best) {
+    		this.txtResult.appendText(d.toString()+"\n");
+    	}
+    	this.txtResult.appendText("con peso: "+model.pesoMax());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
