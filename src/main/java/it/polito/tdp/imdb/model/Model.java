@@ -87,8 +87,9 @@ public class Model {
 		Director ultimo = parziale.get(parziale.size()-1);
 		int massimo= this.calcolaMax(parziale);
 		
-		if (massimo==c || this.raggiungibili.isEmpty()){ 
+		if (this.raggiungibili.isEmpty()){ 
 			if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
+				System.out.print("jewf");
 				this.max=massimo;
 				this.best= new ArrayList<>(parziale);
 				return;
@@ -105,7 +106,6 @@ public class Model {
 					//se supero il max permesso allora non testo la ricorsione con questo director
 					parziale.remove(parziale.size()-1);
 					this.raggiungibili.remove(prossimo);
-					continue;
 				}
 				else {
 					ricorsione(parziale,c);
