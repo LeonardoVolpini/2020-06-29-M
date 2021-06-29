@@ -24,15 +24,15 @@ public class Model {
 	
 	private ArrayList<Director> best;
 	private int max;
-	private ConnectivityInspector<Director, DefaultWeightedEdge> ci;
-	private Set<Director> raggiungibili;
+	//private ConnectivityInspector<Director, DefaultWeightedEdge> ci;
+	//private Set<Director> raggiungibili;
 	
 	public Model() { 
 		this.dao= new ImdbDAO();
 		this.idMap= new HashMap<>();
 		this.grafoCreato=false;
 		this.best= new ArrayList<>();
-		this.raggiungibili= new HashSet<>();
+		//this.raggiungibili= new HashSet<>();
 	}
 	
 	public void creaGrafo(int anno) {
@@ -45,7 +45,7 @@ public class Model {
 			}
 		}
 		this.grafoCreato=true;
-		this.ci= new ConnectivityInspector<>(grafo);
+		//this.ci= new ConnectivityInspector<>(grafo);
 	}
 
 	public boolean isGrafoCreato() {
@@ -76,7 +76,7 @@ public class Model {
 	public List<Director> percorsoMax(int c, Director partenza){ 
 		this.best=null;
 		this.max=0;
-		this.raggiungibili= ci.connectedSetOf(partenza); //per sapere quanli director posso raggiungere dalla mia partenza
+		//this.raggiungibili= ci.connectedSetOf(partenza); //per sapere quanli director posso raggiungere dalla mia partenza
 		List<Director> parziale= new ArrayList<>();
 		parziale.add(partenza);
 		ricorsione(parziale , c);
@@ -100,17 +100,16 @@ public class Model {
 				if (this.calcolaMax(parziale)>c) {
 					//se supero il max permesso allora non testo la ricorsione con questo director
 					parziale.remove(parziale.size()-1);
-					this.raggiungibili.remove(prossimo);
+					//this.raggiungibili.remove(prossimo);
 				}
 				else {
 					ricorsione(parziale,c);
 					parziale.remove(parziale.size()-1); //backtracking
-					this.raggiungibili.remove(prossimo);
+					//this.raggiungibili.remove(prossimo);
 				}
 			}
 		}
 		if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
-			System.out.print("jewf");
 			this.max=massimo;
 			this.best= new ArrayList<>(parziale);
 			return;
