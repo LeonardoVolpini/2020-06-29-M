@@ -116,6 +116,7 @@ public class ImdbDAO {
 				+ "		AND md1.director_id > md2.director_id "
 				+ "		AND m1.year=? AND m2.year=m1.year "
 				+ "GROUP BY md1.director_id, md2.director_id ";
+		// la tabella a credo sia superflua, basta una join tra le tabelle r1 e r2
 		List<Adiacenza> result= new ArrayList<>();
 		Connection conn = DBConnect.getConnection();
 		try {

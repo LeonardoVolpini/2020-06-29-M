@@ -27,7 +27,7 @@ public class Model {
 	private ConnectivityInspector<Director, DefaultWeightedEdge> ci;
 	private Set<Director> raggiungibili;
 	
-	public Model() {
+	public Model() { 
 		this.dao= new ImdbDAO();
 		this.idMap= new HashMap<>();
 		this.grafoCreato=false;
