@@ -87,16 +87,11 @@ public class Model {
 		Director ultimo = parziale.get(parziale.size()-1);
 		int massimo= this.calcolaMax(parziale);
 		
-		if (this.raggiungibili.isEmpty()){ 
-			if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
-				System.out.print("jewf");
-				this.max=massimo;
-				this.best= new ArrayList<>(parziale);
-				return;
-			}
-			else //ho trovato una soluzione ma non è la migliore
-				return;
-		}
+		//if (this.raggiungibili.isEmpty()){ 
+			//qui ci sarebbe la if messa in fondo
+			//else //ho trovato una soluzione ma non è la migliore
+				//return;
+		//}
 		//da qui faccio la ricorsione:
 		for(DefaultWeightedEdge e : grafo.edgesOf(ultimo)){
 			Director prossimo= Graphs.getOppositeVertex(grafo, e, ultimo); 
@@ -113,6 +108,12 @@ public class Model {
 					this.raggiungibili.remove(prossimo);
 				}
 			}
+		}
+		if(this.best==null || massimo>this.max){ //prima iterazione o ho trovato una soluzione migliore
+			System.out.print("jewf");
+			this.max=massimo;
+			this.best= new ArrayList<>(parziale);
+			return;
 		}
 	}
 
